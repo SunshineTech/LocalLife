@@ -1,4 +1,4 @@
-templates.searchView = "app/view/SearchView.html";
+templates.SearchView = "app/view/SearchView.html";
 
 window.SearchView = Backbone.View.extend({
     
@@ -11,7 +11,7 @@ window.SearchView = Backbone.View.extend({
     },
     
     render: function () {
-        this.$el.html(templates.searchView);
+        $(this.el).html(this.template());
         this.setElement(this.$("#searchView"));
         
         var style = " ";
@@ -21,7 +21,7 @@ window.SearchView = Backbone.View.extend({
         }
 
         var self = this;
-        var searchKeyComp = $('<input data-type="search" class="ui-input-text ui-body-null" placeholder="地点、顺风车、出租车、餐饮、住宿、购物" autofocus autocomplete="off"/>');
+        var searchKeyComp = this.searchKeyComp = $('<input data-type="search" class="ui-input-text ui-body-null" placeholder="地点、顺风车、出租车、餐饮、住宿、购物" autofocus autocomplete="off"/>');
         searchKeyComp.on({
             'focus click': function() {
                 window.unBackable = true;
@@ -34,7 +34,7 @@ window.SearchView = Backbone.View.extend({
             }
         });
     
-        var clearText = this.clearText = $('<a href="#" class="ui-input-clear ui-btn ui-btn-icon-notext ui-btn-corner-all ui-shadow ui-btn-up-c ui-input-clear-hidden" title="clear text" data-theme="c"><span class="ui-btn-inner ui-btn-corner-all"><span class="ui-btn-text">清除</span><span class="ui-icon ui-icon-delete ui-icon-shadow"></span></span></a>');
+        var clearText = this.clearText = $('<a href="#" class="ui-input-clear ui-btn ui-btn-icon-notext ui-btn-corner-all ui-shadow ui-btn-up-c ui-input-clear-hidden" title="清除文字" data-theme="c"><span class="ui-btn-inner ui-btn-corner-all"><span class="ui-btn-text">清除文字</span><span class="ui-icon ui-icon-delete ui-icon-shadow"></span></span></a>');
         clearText.on('click', function() {
             searchKeyComp.attr("value","");
             self.onSearch(searchKeyComp.value);
@@ -50,6 +50,7 @@ window.SearchView = Backbone.View.extend({
     },
         
     initSearchView: function() {
+        
         var self = this;
         setTimeout(function() {
             var gallery, el, i, page,
@@ -85,7 +86,10 @@ window.SearchView = Backbone.View.extend({
     },
 
     onSearch: function(searchKey) {
-        if(searchKey) {
+        var key = $.trim(searchKey);
+        
+        if(key) {
+            //this.searchKeyComp.attr("value", key);
             if(!this.displayHeaderActions) {
                 this.displayHeaderActions = true;
                 this.displaySearch(true);
@@ -96,7 +100,6 @@ window.SearchView = Backbone.View.extend({
                 this.displaySearch(false);
             }
         }
-        this.searchKey = searchKey;
     },
         
     displaySearch: function(display) {

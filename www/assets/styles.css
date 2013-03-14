@@ -251,106 +251,181 @@ button {
     -webkit-box-sizing: border-box;
     -ms-box-sizing: border-box;
     box-sizing: border-box;
-    border: 0;
 }
 
-#nav {
+.scroll {
     position:absolute;
-    z-index:100;
-    top:5px;
-    width:200px;
-    height:20px;
-    left:50%;
-    background:rgba(0,0,0,0.75);
-    padding:0;
-    margin:0 0 0 -100px;
-    -webkit-border-radius:10px;
-    -moz-border-radius:10px;
-    -ms-border-radius:10px;
-    -o-border-radius:10px;
-    border-radius:10px;
+    z-index:1;
+    top:0px;
+    bottom:0px;
+    left:0px;
+    right:0px;
+    overflow:auto;
 }
 
-#nav li {
-    display:block;
-    float:left;
-    width:14px;
-    height:14px; line-height:14px;
-    -webkit-border-radius:7px;
-    -moz-border-radius:7px;
-    -ms-border-radius:7px;
-    -o-border-radius:7px;
-    border-radius:7px;
-    background:rgba(255,255,255,0.1);
-    overflow:hidden;
-    padding:0;
-    margin:3px 11px 0 0;
-    text-align:center;	
+.striped{
+    background-color: #cbd2d8;
+    background-image: -webkit-gradient(linear, left top, right top, from(#c5ccd4), color-stop(0.714, #c5ccd4), color-stop(0.714, #cbd2d8), to(#cbd2d8));
+    background-image: -webkit-linear-gradient(left, #c5ccd4, #c5ccd4 71.4%, #cbd2d8 71.5%, #cbd2d8);
+    background-image: -moz-linear-gradient(left, #c5ccd4, #c5ccd4 71.4%, #cbd2d8 71.5%, #cbd2d8);
+    background-image: -ms-linear-gradient(left, #c5ccd4, #c5ccd4 71.4%, #cbd2d8 71.5%, #cbd2d8);
+    background-image: -o-linear-gradient(left, #c5ccd4, #c5ccd4 71.4%, #cbd2d8 71.5%, #cbd2d8);
+    background-image: linear-gradient(left, #c5ccd4, #c5ccd4 71.4%, #cbd2d8 71.5%, #cbd2d8);
+    -webkit-background-size: 7px 1px;
+    -moz-background-size: 7px 1px;
+    -ms-background-size: 7px 1px;
+    -o-background-size: 7px 1px;
+    background-size: 7px 1px;
 }
 
-#nav li#prev {
-    margin-left:5px;
-    background:transparent;
+.tableview{
+	margin: 0;
+	padding: 0;
+	list-style: none;
+	background-color: #fff;
+	border-bottom: 1px solid #e0e0e0;
 }
 
-#nav li#next {
-    margin-right:0;
-    background:transparent;
+.tableview li{
+	display: block;
+	border-top: 1px solid #e0e0e0;
+	padding: 10px;
 }
 
-#nav li.selected {
-    background:rgba(255,255,255,0.4);
+.tableview-links li{
+	padding: 0;
+	display: -webkit-box;
+	display: -moz-box;
+	display: box;
+	width: 100%;
 }
 
-#wrapper > div > .swipeview-loading {
-    background-image:-webkit-gradient(linear, 0 0, 0 100%, from(#444), to(#555)),
-    -webkit-gradient(linear, 0 0, 100% 0, from(#777), to(#777));
-    background-position:50% 50%, 50% 50%;
-    background-size:200px 140px, 210px 150px;
-    background-repeat:no-repeat;
+.tableview-links li>a{
+	font-size: 15px;
+	line-height: 1.3em;
+	color: #000;
+	display: block;
+	padding: 5px;
+	text-decoration: none;
+	-webkit-tap-highlight-color: rgba(0,0,0,0);
+	display: -webkit-box;
+	display: -moz-box;
+	display: box;
+	width: 100%;
+	-webkit-box-flex: 1;
+	-moz-box-flex: 1;
+	box-flex: 1;
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
+	background-image: -webkit-gradient(linear, left top, left bottom, from(#4286f5), to(#194fdb));
+	background-image: -webkit-linear-gradient(top, #4286f5, #194fdb);
+	background-image: -moz-linear-gradient(top, #4286f5, #194fdb);
+	background-image: -ms-linear-gradient(top, #4286f5, #194fdb);
+	background-image: -o-linear-gradient(top, #4286f5, #194fdb);
+	background-image: linear-gradient(top, #4286f5, #194fdb);
+	background-position: -10px 0;
+	background-repeat: no-repeat;
+	-webkit-background-size: 10px 100%;
+	-moz-background-size: 10px 100%;
+	-ms-background-size: 10px 100%;
+	-o-background-size: 10px 100%;
+	background-size: 10px 100%;
 }
 
-#wrapper > div > .swipeview-loading img,
-#swipeview-slider img.loading {
-    -webkit-transition-duration:0s;
-    opacity:0;
+.tableview-links li>a *{
+	pointer-events: none;
 }
 
-#wrapper > div > .swipeview-loading span {
-    -webkit-transition-duration:0s;
-    -moz-transition-duration:0s;
-    -ms-transition-duration:0s;
-    -o-transition-duration:0s;
-    transition-duration:0s;
-    -webkit-transform:translate(0,100%) translateZ(0);
-    -moz-transform:translate(0,100%) translateZ(0);
-    -ms-transform:translate(0,100%);
-    -ms-transform:translate(0,100%) translateZ(0);
-    -o-transform:translate(0,100%);
-    -o-transform:translate(0,100%) translateZ(0);
-    transform:translate(0,100%) translateZ(0);	
+.tableview-links li>a .metadata{
+	display: block;
+	font-size: 13px;
+	color: #666d74;
+	line-height: 1.2em;
 }
 
-.rl_list {
-    color: #3b3b3b;
-    font-size: 1em;
-    background-color: #fff;
-    border-top: 1px solid #ddd;
-    border-bottom: 1px solid #fff;
+.tableview-links li>a.pad-right{
+	padding-right: 88px;
 }
 
-.rl_tree .rl_list li {
-    padding: 0;
-    background: #f7f7f7;
-    border-bottom: 1px solid #d9d9d9;
-    color: #3b3b3b;
+.tableview-links li>a.more-link{
+	cursor: pointer;
+	/*-webkit-touch-callout: none;*/
+	line-height: 3em;
+	padding: 10px;
+	display: block;
+	color: #2960d9;
+	text-align: center;
+	font-weight: bold;
 }
 
-.rl_list li {
-    min-height: 3.2em;
-    padding: 0 .79em .357em;
-    border-bottom: 1px solid #ddd;
-    background-color: #f7f7f7;
-    position: relative;
-    padding-bottom: 11px;
+.tableview-links li>a.tappable-active{
+	color: #fff;
+	background-color: #4286f5;
+	background-repeat: repeat-x;
+}
+
+.tableview-links li>a.tappable-active *{
+	color: #fff;
+}
+
+.tableview-links li>a.detail-disclosure,
+.tableview-links li>a.list-disclosure {
+	/*-webkit-touch-callout: none;*/
+	padding: 0;
+	width: 44px;
+	margin: 0 0 0 -44px;
+	-webkit-box-align: center;
+	-moz-box-align: center;
+	box-align: center;
+	-webkit-box-pack: center;
+	-moz-box-pack: center;
+	box-pack: center;
+	-webkit-box-flex: 0;
+	-moz-box-flex: 0;
+	box-flex: 0;
+}
+
+.tableview-links li>a.list-disclosure {
+    margin-right: 44px;
+}
+
+.tableview-links li>a.detail-disclosure.tappable-active,
+.tableview-links li>a.list-disclosure.tappable-active{
+	background: transparent none;
+}
+
+.tableview-links li>a.detail-disclosure span,
+.tableview-links li>a.list-disclosure span {
+    display: inline-block;
+    width: 29px;
+    height: 31px;
+    background: transparent url(img/detail-disclosure-button.png);
+    -webkit-background-size: 58px 31px;
+    -moz-background-size: 58px 31px;
+    -ms-background-size: 58px 31px;
+    -o-background-size: 58px 31px;
+    background-size: 58px 31px;
+}
+
+.tableview-links li>a.list-disclosure span {
+    background-image: url(img/list-open-button.png);
+}
+
+.tableview-links li>a.sublist-open span {
+    background-image: url(img/list-close-button.png);
+}
+
+.tableview-links li>a.detail-disclosure.tappable-active span,
+.tableview-links li>a.list-disclosure.tappable-active span {
+    background-position: top right;
+}
+
+.tableview-links li.subList {
+    margin-left: 20px;
+    width: auto;
+}
+
+.tableview-links li.subList>ul {
+    width: 100%;
 }

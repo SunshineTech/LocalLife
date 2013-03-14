@@ -31,24 +31,8 @@ _.extend(SearchTagDAO.prototype, {
             function(tx) { NativeUtil.showAlert(tx.message, "查询标签时出错"); }
         );
     },
-
-    findAllByParent: function(callback, parentId) {
-        
-        var self = this;
-        this.db.transaction(
-            function(tx) {
-                var sql = "SELECT t.id, t.name, t.userImg, t.img, count(s.id) subCount " +
-                        "FROM searchTag t LEFT JOIN searchTag s ON s.parentId = t.id " +
-                        "WHERE t.parentId = ? " +
-                        "GROUP BY t.id ORDER BY t.priority";
-                
-                tx.executeSql(sql, [parentId ? parentId : 0], function(tx, results) { self._getResults(tx, results, callback); });
-            },
-            function(tx) { NativeUtil.showAlert(tx.message, "查询下级标签时出错"); }
-        );
-    },
     
-    findByParent: function(callback, parentId) {
+    findByParent: function(parentId, disableInclude, callback) {
         
         var self = this;
         this.db.transaction(
@@ -58,13 +42,21 @@ _.extend(SearchTagDAO.prototype, {
                         "WHERE t.enable = 1 AND t.parentId = ? " +
                         "GROUP BY t.id ORDER BY priority";
                 
+                if(disableInclude) {
+                    
+                    sql = "SELECT t.id, t.name, t.userImg, t.img, count(s.id) subCount " +
+                            "FROM searchTag t LEFT JOIN searchTag s ON s.parentId = t.id " +
+                            "WHERE t.parentId = ? " +
+                            "GROUP BY t.id ORDER BY t.priority";
+                }
+                
                 tx.executeSql(sql, [parentId ? parentId : 0], function(tx, results) { self._getResults(tx, results, callback); });
             },
             function(tx) { NativeUtil.showAlert(tx.message, "查询下级标签时出错"); }
         );
     },
     
-    findByName: function(callback, key) {
+    findByName: function(key, callback) {
         
         if(key) {
             var self = this;
@@ -75,7 +67,7 @@ _.extend(SearchTagDAO.prototype, {
                             "WHERE name LIKE ? " +
                             "ORDER BY priority";
 
-                    tx.executeSql(sql, [key + '%'], function(tx, results) { self._getResults(tx, results, callback); });
+                    tx.executeSql(sql, ['%' + key + '%'], function(tx, results) { self._getResults(tx, results, callback); });
                 },
                 function(tx) { NativeUtil.showAlert(tx.message, "查询标签时出错"); }
             );

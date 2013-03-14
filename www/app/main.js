@@ -7,6 +7,29 @@ function onDeviceReady() {
 function appTemplatesLoaded() {
     $("body").empty();
     
+    if (document.documentElement.hasOwnProperty('ontouchstart')) {
+        
+        document.addEventListener('touchmove', function (e) { e.preventDefault(); }, false);
+
+        // ... if yes: register touch event listener to change the "selected" state of the item
+        $('body').on('touchstart', 'a', function(event) {
+            selectItem(event);
+        });
+    
+        $('body').on('touchend', 'a', function(event) {
+            deselectItem(event);
+        });
+    } else {
+        //... if not: register mouse events instead
+        $('body').on('mousedown', 'a', function(event) {
+            selectItem(event);
+        });
+    
+        $('body').on('mouseup', 'a', function(event) {
+            deselectItem(event);
+        });
+    }
+    
     var homeView;
     if(window.localStorage.getItem("preference_homeView")) {
         homeView = new (window.localStorage.getItem("preference_homeView"))();
@@ -18,6 +41,14 @@ function appTemplatesLoaded() {
     window.viewNavigator = new ViewNavigator( 'body' );	
     window.viewNavigator.pushView( homeView );
     document.addEventListener("backbutton", onBackKey, false);
+}
+
+function selectItem(event) {
+    $(event.target).addClass('tappable-active');
+}
+
+function deselectItem(event) {
+    $(event.target).removeClass('tappable-active');
 }
 
 function onBackKey( event ) {
@@ -45,5 +76,3 @@ function onBackKey( event ) {
         }
     );
 }
-
-document.addEventListener('touchmove', function (e) { e.preventDefault(); }, false);

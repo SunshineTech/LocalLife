@@ -18,6 +18,7 @@ function loadTemplates(callback) {
                  templates.requested ++;
                  
                  var templateLoaded = function( template ){
+                    window[_key].prototype.template = _.template(template);
                     onTemplateLoaded( template, _key );
                  };
                  

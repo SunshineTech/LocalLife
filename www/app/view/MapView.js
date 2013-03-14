@@ -1,4 +1,4 @@
-templates.mapView = "app/view/MapView.html";
+templates.MapView = "app/view/MapView.html";
 
 window.MapView = Backbone.View.extend({
     
@@ -15,7 +15,7 @@ window.MapView = Backbone.View.extend({
     },
         
     render: function (eventName) {
-        this.$el.html(templates.mapView);
+        $(this.el).html(this.template());
         this.setElement(this.$("#mapView"));
         
         var style = " ";
