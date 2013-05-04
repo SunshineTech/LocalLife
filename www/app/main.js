@@ -1,3 +1,4 @@
+var serverUrl = 'http://sunshinetech.kmdns.net/magento/';
 document.addEventListener("deviceready", onDeviceReady, false);
 
 function onDeviceReady() {
@@ -29,6 +30,8 @@ function appTemplatesLoaded() {
             deselectItem(event);
         });
     }
+    
+    new SearchTagDAO().initialize();
     
     var homeView;
     if(window.localStorage.getItem("preference_homeView")) {

@@ -1,5 +1,5 @@
-window.SearchTagDAO = function(db) {
-    this.db = db;
+window.SearchTagDAO = function() {
+    this.db = window.openDatabase("LocalLifeDB", "1.0", "Local Life DB", 200000);
 };
 
 _.extend(SearchTagDAO.prototype, {
@@ -22,7 +22,7 @@ _.extend(SearchTagDAO.prototype, {
         var self = this;
         this.db.transaction(
             function(tx) {
-                var sql = "SELECT id, name, userImg, img, priority, enable, prefectNormal, prefectNear " +
+                var sql = "SELECT id, name, userImg, img, priority, normalPriority, nearPriority, parentId, isActive " +
                         "FROM searchTag " +
                         "WHERE id = ? ";
                 
@@ -38,9 +38,9 @@ _.extend(SearchTagDAO.prototype, {
         this.db.transaction(
             function(tx) {
                 var sql = "SELECT t.id, t.name, t.userImg, t.img, count(s.id) subCount " +
-                        "FROM searchTag t LEFT JOIN searchTag s ON s.parentId = t.id AND s.enable = 1 " +
-                        "WHERE t.enable = 1 AND t.parentId = ? " +
-                        "GROUP BY t.id ORDER BY priority";
+                        "FROM searchTag t LEFT JOIN searchTag s ON s.parentId = t.id AND s.isActive = 1 " +
+                        "WHERE t.isActive = 1 AND t.parentId = ? " +
+                        "GROUP BY t.id ORDER BY t.priority";
                 
                 if(disableInclude) {
                     
@@ -50,7 +50,7 @@ _.extend(SearchTagDAO.prototype, {
                             "GROUP BY t.id ORDER BY t.priority";
                 }
                 
-                tx.executeSql(sql, [parentId ? parentId : 0], function(tx, results) { self._getResults(tx, results, callback); });
+                tx.executeSql(sql, [parentId], function(tx, results) { self._getResults(tx, results, callback); });
             },
             function(tx) { NativeUtil.showAlert(tx.message, "查询下级标签时出错"); }
         );
@@ -82,8 +82,8 @@ _.extend(SearchTagDAO.prototype, {
             function(tx) {
                 var sql = "SELECT id, name, userImg, img " +
                         "FROM searchTag " +
-                        "WHERE prefectNormal = 1 " +
-                        "ORDER BY priority";
+                        "WHERE normalPriority > 0 " +
+                        "ORDER BY normalPriority";
                 
                 tx.executeSql(sql, [], function(tx, results) { self._getResults(tx, results, callback); });
             },
@@ -97,8 +97,8 @@ _.extend(SearchTagDAO.prototype, {
             function(tx) {
                 var sql = "SELECT id, name, userImg, img " +
                         "FROM searchTag " +
-                        "WHERE prefectNear = 1 " +
-                        "ORDER BY priority";
+                        "WHERE nearPriority > 0 " +
+                        "ORDER BY nearPriority";
                 
                 tx.executeSql(sql, [], function(tx, results) { self._getResults(tx, results, callback); });
             },
@@ -122,7 +122,9 @@ _.extend(SearchTagDAO.prototype, {
                     }
                 });
             },
-            NativeUtil.showAlert(tx.message, "查询主表时出错")
+            function(tx) {
+                NativeUtil.showAlert(tx.message, "查询主表时出错");
+            }
         );
     },
     
@@ -130,10 +132,21 @@ _.extend(SearchTagDAO.prototype, {
         var self = this;
         this.isInitialized(function(result) {
             if (result) {
-                callback();
+                if(callback)
+                    callback();
             } else {
                 self.createTable(function() {
-                    //self.populate(callback);
+                    self.sync(
+                            function(numItems) {
+                                NativeUtil.showAlert('已同步' + numItems + '项', '同步完成');
+                                if(callback)
+                                    callback();
+                            },
+                            function(errorMessage) {
+                                NativeUtil.showAlert(errorMessage, '同步错误');
+                                console.log(errorMessage);
+                            }
+                    );
                 });
             }
         });
@@ -148,30 +161,15 @@ _.extend(SearchTagDAO.prototype, {
                         "userImg VARCHAR(50), "  + //用户定义图片
                         "img VARCHAR(50), "  +                        
                         "priority INTEGER, " +  //优先级
-                        "enable INTEGER, " + //是否启用
+                        "normalPriority INTEGER, " + //普通搜索推荐优先级
+                        "nearPriority INTEGER, " + //附近搜索推荐优先级
                         "parentId INTEGER, " + //上级类别Id
-                        "prefectNormal INTEGER, " + //是否普通搜索推荐
-                        "prefectNear INTEGER, " + //是否附近搜索推荐
-                        "userModified VARCHAR(50), " + //用户修改时间
+                        "isActive INTEGER, " + //是否启用
                         "lastModified VARCHAR(50))";
+                        
                 tx.executeSql(sql);
             },
-            NativeUtil.showAlert(tx.message, "生成数据表出错"),
-            function(tx) {
-                callback();
-            }
-        );
-    },
-
-    // Populate searchTag table with init data for ou-of-the-box experience
-    populate: function(callback) {
-        this.db.transaction(
-            function(tx) {
-                console.log('Inserting searchTag');
-                tx.executeSql("INSERT INTO searchTag (id, name, img, priority, enable, parentId, prefectNormal, prefectNear, lastModified) VALUES (12,'Steven','Wells',4,'Software Architect','Engineering','617-000-0012','781-000-0012','swells@fakemail.com','Boston, MA','pics/Steven_Wells.jpg','@fakeswells',NULL,'2010-06-0319:01:19',0)");
-                
-            },
-            this.txErrorHandler,
+            function(tx) { NativeUtil.showAlert(tx.message, "生成数据表出错"); },
             function(tx) {
                 callback();
             }
@@ -181,15 +179,15 @@ _.extend(SearchTagDAO.prototype, {
     getLastSync: function(callback) {
         this.db.transaction(
             function(tx) {
-                var sql = "SELECT MAX(lastModified) as lastSync FROM searchTag";
-                tx.executeSql(sql, NativeUtil.showAlert(tx.message, "查询标签最后更新时间出错"),
+                tx.executeSql("SELECT MAX(lastModified) as lastSync FROM searchTag", [],
                     function(tx, results) {
                         var lastSync = results.rows.item(0).lastSync;
                         console.log('Last local timestamp is ' + lastSync);
                         callback(lastSync);
                     }
                 );
-            }
+            },
+            function(tx) { NativeUtil.showAlert(tx.message, "查询标签最后更新时间出错"); }
         );
     },
 
@@ -198,7 +196,7 @@ _.extend(SearchTagDAO.prototype, {
         var self = this;
         console.log('Starting synchronization...');
         this.getLastSync(function(lastSync){
-            var syncURL = window.localStorage.getItem("syncURL");
+            var syncURL = serverUrl + 'lbs/searchTag/';
             self.getChanges(syncURL, lastSync,
                 function (changes) {
                     if (changes.length > 0) {
@@ -215,37 +213,30 @@ _.extend(SearchTagDAO.prototype, {
 
     getChanges: function(syncURL, modifiedSince, cbSuccess, cbError) {
         console.log("Getting server changes since  " + modifiedSince + " at " + syncURL);
-        $.ajax({
-            url: syncURL,
-            data: {modifiedSince: modifiedSince},
-            dataType:"json",
-            success:function (data) {
+        $.getJSON(
+            syncURL + "?modifiedSince=" + modifiedSince + "&format=json&jsoncallback=?",
+            function (data) {
                 console.log("The server returned " + data.length + " changes that occurred after " + modifiedSince);
                 cbSuccess(data);
-            },
-            error: function(model, response) {
-                cbError("Can't get changes from the server. Make sure you the synchronization endpoint is available.");
             }
-        });
+        );
     },
 
     applyChanges: function(tags, cbSuccess, cbError) {
-        
         this.db.transaction(
             function(tx) {
                 var l = tags.length;
                 var sql =
                     "INSERT OR REPLACE INTO searchTag " +
-                    "(id, name, img, priority, enable, parentId, prefectNormal, prefectNear, lastModified) " +
-                    "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                    "(id, name, userImg, img, priority, normalPriority, nearPriority, parentId, isActive, lastModified) " +
+                    "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
                 console.log('Inserting or Updating in local database:');
                 var tag;
                 for (var i = 0; i < l; i++) {
-                    $('#count').html(i);
                     tag = tags[i];
-                    console.log(tag.id + ' ' + tag.name + ' ' + tag.img + ' ' + tag.priority + ' ' + tag.enable + ' ' + tag.parentId + ' ' + tag.lastModified);
-                    var params = [tag.id, tag.name, tag.img, tag.priority, tag.enable, tag.parentId, tag.prefectNormal, tag.prefectNear, tag.lastModified];
-                    tx.executeSql(sql, params);
+                    console.log(tag.id + ' ' + (tag.name ? tag.name : tag.default_name) + ' ' + (tag.user_img ? tag.user_img : '') +  ' ' + tag.img + ' ' + tag.priority + ' ' + tag.normal_priority + ' ' + tag.near_priority + ' ' + tag.parent_id);
+                    var params = [tag.id, tag.name ? tag.name : tag.default_name, tag.user_img ? tag.user_img : '', tag.img, tag.priority, tag.normal_priority, tag.near_priority, tag.parent_id, tag.is_active, tag.updated_at];
+                    tx.executeSql(sql, params);                    
                 }
                 console.log('Synchronization complete (' + l + ' items synchronized)');
                 cbSuccess(l);
@@ -255,7 +246,7 @@ _.extend(SearchTagDAO.prototype, {
             }
         );
     },
-
+    
     dropTable: function(callback) {
         this.db.transaction(
             function(tx) {

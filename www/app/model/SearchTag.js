@@ -7,16 +7,14 @@ window.SearchTag = Backbone.Model.extend({
     },
     
     sync: function(method, model, options) {
-        var dao = new SearchTagDAO(localLifeDB);
+        var dao = new SearchTagDAO();
         switch (method) {
             case "read":
                 if(model.id) {
                     dao.findById(model.id, function(data) {
                         options.success(data);
                     });
-                }
-            
-                if(model.parentId) {
+                } else if(model.parentId) {
                     dao.findByParent(model.parentId, model.disableInclude, function(data) {
                         options.success(data);
                     });
@@ -29,9 +27,17 @@ window.SearchTag = Backbone.Model.extend({
 window.SearchTagList = Backbone.Collection.extend({
     
     model: SearchTag,
+            
+    findByParent: function(parentId, disableInclude) {
+        var dao = new SearchTagDAO(),
+            self = this;
+        dao.findByParent(parentId, disableInclude, function(data) {
+            self.reset(data);
+        });
+    },
     
     findByName: function(key) {
-        var dao = new SearchTagDAO(localLifeDB),
+        var dao = new SearchTagDAO(),
             self = this;
         dao.findByName(key, function(data) {
             self.reset(data);
@@ -39,7 +45,7 @@ window.SearchTagList = Backbone.Collection.extend({
     },
     
     getPrefectNormal: function() {
-        var dao = new SearchTagDAO(localLifeDB),
+        var dao = new SearchTagDAO(),
             self = this;
         dao.getPrefectNormal(function(data) {
             self.reset(data);
@@ -47,7 +53,7 @@ window.SearchTagList = Backbone.Collection.extend({
     },
     
     getPrefectNear: function() {
-        var dao = new SearchTagDAO(localLifeDB),
+        var dao = new SearchTagDAO(),
             self = this;
         dao.getPrefectNear(function(data) {
             self.reset(data);

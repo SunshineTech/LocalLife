@@ -30,7 +30,7 @@ window.SearchTagListView = Backbone.View.extend({
         var href = target.get(0).href;
         var tagId = href.substr(href.indexOf('#') + 6);
         
-        var className = target.get(0).className;        
+        var className = target.get(0).className;
         if(className.indexOf('list-disclosure') === 0) {
 
             if(this.target && this.target !== target) {
@@ -45,11 +45,13 @@ window.SearchTagListView = Backbone.View.extend({
         
             var sublistEL = $('#tagList-' + tagId, this.el);
             if(sublistEL.length <= 0) {
-                var sublist = $('<li class="subList" id="#tagList-' + tagId + '"><ul class="tableview tableview-links"></ul></li>');
+                var sublist = $('<li class="subList" id="tagList-' + tagId + '"><ul class="tableview tableview-links"></ul></li>');
                 targetLi.after(sublist);
-                var searchTag = new SearchTag({id: tagId});
-                searchTag.subTags.fetch();
-                var listView = new SearchTagListView({el: sublistEL, model: searchTag.subTags});
+                sublistEL = $('#tagList-' + tagId, this.el);
+                
+                var searchTagList = new SearchTagList();
+                searchTagList.findByParent(tagId, this.disableInclude);
+                var listView = new SearchTagListView({el: sublistEL, model: searchTagList, disableInclude: this.disableInclude, callback: this.callback});
                 listView.render();               
             }
             
@@ -63,7 +65,7 @@ window.SearchTagListView = Backbone.View.extend({
                 target.removeClass('sublist-open');
             }
         } else {
-            this.callback(tagId, this.model.get(tagId).name);
+            this.callback(tagId);
         }
     
         return false;

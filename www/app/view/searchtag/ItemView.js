@@ -1,27 +1,31 @@
-templates.SearchTagItemView = "app/views/searchtag/ItemView.html";
+templates.SearchTagItemView = "app/view/searchtag/ItemView.html";
 
 window.SearchTagItemView = Backbone.View.extend({
     
     tagName: "li",
     
-    initialize: function () {
+    initialize: function() {
         this.model.bind("change", this.render, this);
     },
     
     render: function(eventName) {
         $(this.el).html(this.template(this.model.toJSON()));
-        
+
         var self = this;
-        $('<img height="36" width="36" class="list-icon"/>')
-                .attr('src', this.model.get('userImg') ? this.model.get('userImg') : this.model.get('img'))
-                .load(
+        var img = this.model.get('userImg') ? this.model.get('userImg') : this.model.get('img');
+        if (img)
+            $('<img height="36" width="36" class="list-icon"/>')
+                    .attr('src', serverUrl + 'pub/media/' + img)
+                    .load(
                     function() {
                         $('.imgHolder', self.el).html(this);
                     }
-                ).on('error', function(event) {
-                    $('.imgHolder', self.el).remove();
-                });
-        
+            ).on('error', function(event) {
+                $('.imgHolder', self.el).remove();
+            });
+        else
+            $('.imgHolder', self.el).remove();
+
         return this;
     }
 });
