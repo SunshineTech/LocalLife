@@ -80,7 +80,7 @@ ViewNavigator.prototype.replaceView = function(viewDescriptor) {
         return;
     viewDescriptor.animation = 'pushEffect';
 
-	//this is a hack to mimic behavior of pushView, then pop off the 'current' from the history
+    //this is a hack to mimic behavior of pushView, then pop off the 'current' from the history
     this.history.push(viewDescriptor);
     this.updateView(viewDescriptor);
     this.history.pop();
@@ -128,28 +128,28 @@ ViewNavigator.prototype.updateView = function(viewDescriptor) {
 
     this.headerContent = $('<div class="' + this.options.CSSNamespace + 'headerContent"></div>');
 
-    if ( viewDescriptor.titleActions ) {
+    if (viewDescriptor.titleActions) {
         this.headerTitle = $('<div class="' + this.options.CSSNamespace + 'header_title"></div>');
-        this.headerTitle.append( viewDescriptor.titleActions );
+        this.headerTitle.append(viewDescriptor.titleActions);
     } else {
         this.headerTitle = $('<div class="' + this.options.CSSNamespace + 'header_title">' + viewDescriptor.title + '</div>');
-    }    
-    this.headerContent.append( this.headerTitle );
+    }
+    this.headerContent.append(this.headerTitle);
 
     var linkGuid = this.guid();
-    if ( viewDescriptor.backLabel ) {
-        this.headerBacklink = $('<a href="#" class="header-button header-button-left header-back-button" id="link' + linkGuid + '" onclick="window.viewNavigators[\'' + this.uniqueId + '\'].popView()"><button>'+ viewDescriptor.backLabel + '</button></a>');
+    if (viewDescriptor.backLabel) {
+        this.headerBacklink = $('<a href="#" class="header-button header-button-left header-back-button" id="link' + linkGuid + '" onclick="window.viewNavigators[\'' + this.uniqueId + '\'].popView()"><button>' + viewDescriptor.backLabel + '</button></a>');
         //this.headerBacklink = $('<li class="' + this.options.CSSNamespace + 'header_backlink ' + this.options.CSSNamespace + 'backButtonPosition ' + this.options.backLinkCSS +'" id="link' + linkGuid + '" onclick="window.viewNavigators[\'' + this.uniqueId + '\'].popView()">'+ viewDescriptor.backLabel + '</li>');
-	this.headerContent.append( this.headerBacklink );
+        this.headerContent.append(this.headerBacklink);
 
-	//this is for proper handling in splitviewnavigator
-	//this.setHeaderPadding( this.headerPadding );
+        //this is for proper handling in splitviewnavigator
+        //this.setHeaderPadding( this.headerPadding );
     }
 
-    if ( viewDescriptor.headerActions ) {
+    if (viewDescriptor.headerActions) {
         //this.headerActionsDiv = $('<div class="' + this.options.CSSNamespace + 'headerActions"></div>');
         //this.headerActionsDiv.append( viewDescriptor.headerActions );
-        this.headerContent.append( viewDescriptor.headerActions );
+        this.headerContent.append(viewDescriptor.headerActions);
 
         //this is for proper handling in splitviewnavigator
         //this.setHeaderPadding( this.headerPadding );
@@ -354,9 +354,7 @@ ViewNavigator.prototype.resetScroller = function() {
                         self.scroller.scrollTo(0, parseInt(scrollY, 10));
                     }
                 }, 10);
-
-            }
-            else {
+            } else {
                 var target = $('#' + id);
                 target.css('overflow', 'auto');
             }
@@ -441,5 +439,3 @@ else
     document.addEventListener('touchmove', function(e) {
         e.preventDefault();
     }, false);
-
-

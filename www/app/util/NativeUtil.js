@@ -27,7 +27,7 @@ NativeUtil = {
                 buttonName ? buttonName : "知道了"
             );
         } else {
-            alert("<h1>" + (title ? title : "警告") + "</h1>" + '\n' +  message);
+            alert((title ? title : "警告") + '\n\n' +  message);
         }
     },
         
@@ -47,7 +47,7 @@ NativeUtil = {
                 buttonLabels ? buttonLabels : "确定,点错了"
             );            
         } else {
-            confirmCallback(confirm("<h1>" + (title ? title : "确认") + "</h1>" + '\n' +  message));
+            confirmCallback(confirm((title ? title : "确认") + '\n\n' +  message));
         }
     }
 };

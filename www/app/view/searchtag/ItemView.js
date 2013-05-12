@@ -2,6 +2,7 @@ templates.SearchTagItemView = "app/view/searchtag/ItemView.html";
 
 window.SearchTagItemView = Backbone.View.extend({
     
+    className: "ui-btn ui-btn-icon-right ui-li ui-btn-up-c",
     tagName: "li",
     
     initialize: function() {

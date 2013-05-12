@@ -2,6 +2,7 @@ templates.SearchTagSetView = "app/view/searchtag/SetView.html";
 
 window.SearchTagSetView = Backbone.View.extend({
     
+    className: 'striped',
     backLabel: '返回',
     title: '搜索标签设置',
     

@@ -78,9 +78,10 @@ _.extend(SearchTagDAO.prototype, {
     
     getPrefectNormal: function(callback) {
         
+        var self = this;
         this.db.transaction(
             function(tx) {
-                var sql = "SELECT id, name, userImg, img " +
+                var sql = "SELECT id, name, userImg, img, 0 subCount " +
                         "FROM searchTag " +
                         "WHERE normalPriority > 0 " +
                         "ORDER BY normalPriority";
@@ -132,21 +133,10 @@ _.extend(SearchTagDAO.prototype, {
         var self = this;
         this.isInitialized(function(result) {
             if (result) {
-                if(callback)
-                    callback();
+                self.sync(callback);
             } else {
                 self.createTable(function() {
-                    self.sync(
-                            function(numItems) {
-                                NativeUtil.showAlert('已同步' + numItems + '项', '同步完成');
-                                if(callback)
-                                    callback();
-                            },
-                            function(errorMessage) {
-                                NativeUtil.showAlert(errorMessage, '同步错误');
-                                console.log(errorMessage);
-                            }
-                    );
+                    self.sync(callback);
                 });
             }
         });
@@ -170,16 +160,14 @@ _.extend(SearchTagDAO.prototype, {
                 tx.executeSql(sql);
             },
             function(tx) { NativeUtil.showAlert(tx.message, "生成数据表出错"); },
-            function(tx) {
-                callback();
-            }
+            function(tx) { callback(); }
         );
     },
 
     getLastSync: function(callback) {
         this.db.transaction(
             function(tx) {
-                tx.executeSql("SELECT MAX(lastModified) as lastSync FROM searchTag", [],
+                tx.executeSql("SELECT MAX(lastModified) lastSync FROM searchTag", [],
                     function(tx, results) {
                         var lastSync = results.rows.item(0).lastSync;
                         console.log('Last local timestamp is ' + lastSync);
@@ -191,38 +179,52 @@ _.extend(SearchTagDAO.prototype, {
         );
     },
 
-    sync: function(cbSuccess, cbError) {
+    sync: function(callback) {
 
         var self = this;
         console.log('Starting synchronization...');
-        this.getLastSync(function(lastSync){
+        this.getLastSync(function(lastSync) {
             var syncURL = serverUrl + 'lbs/searchTag/';
             self.getChanges(syncURL, lastSync,
                 function (changes) {
                     if (changes.length > 0) {
-                        self.applyChanges(changes, cbSuccess, cbError);
+                        self.applyChanges(changes, callback);
                     } else {
                         console.log('Nothing to synchronize');
-                        cbSuccess(0);
+                        if(callback)
+                            callback(0);
                     }
-                },
-                cbError
+                }
             );
         });
     },
 
-    getChanges: function(syncURL, modifiedSince, cbSuccess, cbError) {
+    getChanges: function(syncURL, modifiedSince, callback) {
         console.log("Getting server changes since  " + modifiedSince + " at " + syncURL);
-        $.getJSON(
+        
+        var isneedtoKillAjax = true;
+        setTimeout(function() {
+            checkajaxkill();
+        }, 5000);
+        
+        var myAjaxCall = $.getJSON(
             syncURL + "?modifiedSince=" + modifiedSince + "&format=json&jsoncallback=?",
             function (data) {
+                isneedtoKillAjax = false;
                 console.log("The server returned " + data.length + " changes that occurred after " + modifiedSince);
-                cbSuccess(data);
+                callback(data);
             }
         );
+            
+        function checkajaxkill() {
+            if(isneedtoKillAjax) {
+                myAjaxCall.abort();
+                NativeUtil.showAlert("同步搜索标签数据超时，请确认网络状况并稍后重试！", "同步错误");                 
+            }
+        }
     },
 
-    applyChanges: function(tags, cbSuccess, cbError) {
+    applyChanges: function(tags, callback) {
         this.db.transaction(
             function(tx) {
                 var l = tags.length;
@@ -238,11 +240,13 @@ _.extend(SearchTagDAO.prototype, {
                     var params = [tag.id, tag.name ? tag.name : tag.default_name, tag.user_img ? tag.user_img : '', tag.img, tag.priority, tag.normal_priority, tag.near_priority, tag.parent_id, tag.is_active, tag.updated_at];
                     tx.executeSql(sql, params);                    
                 }
-                console.log('Synchronization complete (' + l + ' items synchronized)');
-                cbSuccess(l);
+                console.log('Apply Changes complete (' + l + ' items applied)');
+                if(callback)
+                    callback(l);
             },
             function(tx) {
-                cbError(tx.message);
+                console.log('Apply Changes Error (' + tx.message + ')');
+                NativeUtil.showAlert(tx.message, "更新标签数据时出错");
             }
         );
     },
@@ -264,9 +268,7 @@ _.extend(SearchTagDAO.prototype, {
     reset: function(callback) {
         var self = this;
         this.dropTable(function() {
-           self.createTable(function(){
-               callback();
-           });
+           self.initialize(callback);
         });
     }
 });

@@ -8,29 +8,6 @@ function onDeviceReady() {
 function appTemplatesLoaded() {
     $("body").empty();
     
-    if (document.documentElement.hasOwnProperty('ontouchstart')) {
-        
-        document.addEventListener('touchmove', function (e) { e.preventDefault(); }, false);
-
-        // ... if yes: register touch event listener to change the "selected" state of the item
-        $('body').on('touchstart', 'a', function(event) {
-            selectItem(event);
-        });
-    
-        $('body').on('touchend', 'a', function(event) {
-            deselectItem(event);
-        });
-    } else {
-        //... if not: register mouse events instead
-        $('body').on('mousedown', 'a', function(event) {
-            selectItem(event);
-        });
-    
-        $('body').on('mouseup', 'a', function(event) {
-            deselectItem(event);
-        });
-    }
-    
     new SearchTagDAO().initialize();
     
     var homeView;

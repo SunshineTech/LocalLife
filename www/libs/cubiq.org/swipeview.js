@@ -72,8 +72,8 @@ var SwipeView = (function (window, document) {
 			// User defined options
 			for (i in options) this.options[i] = options[i];
 			
-			this.wrapper.style.overflow = 'hidden';
-			this.wrapper.style.position = 'relative';
+			//this.wrapper.style.overflow = 'hidden';
+			//this.wrapper.style.position = 'relative';
 			
 			this.masterPages = [];
 			

@@ -17,6 +17,8 @@ window.SearchTagListView = Backbone.View.extend({
             ul.append(new SearchTagItemView({model: searchTag}).render().el);
         }, this);
         
+        window.viewNavigator.refreshScroller();
+        
         return this;
     },
         
@@ -60,10 +62,12 @@ window.SearchTagListView = Backbone.View.extend({
                 sublistEL.css('display', '');
                 this.target = target;
                 this.sublist = sublistEL;
+                window.viewNavigator.scroller.scrollToElement(targetLi.get(0), 100);
             } else {
                 sublistEL.css('display', 'none');
                 target.removeClass('sublist-open');
             }
+            window.viewNavigator.refreshScroller();
         } else {
             this.callback(tagId);
         }

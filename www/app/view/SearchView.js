@@ -4,10 +4,10 @@ window.SearchView = Backbone.View.extend({
     
     scroll: false,
     
-    initialize: function(options) {        
+    initialize: function(options) {
         this.render();
         this.view = this.$el;
-        //this.initSearchView();
+        this.initSearchView();
     },
     
     render: function () {
@@ -25,9 +25,15 @@ window.SearchView = Backbone.View.extend({
         searchKeyComp.on({
             'focus click': function() {
                 window.unBackable = true;
+                setTimeout(function () {
+                    window.viewNavigator.refreshScroller();
+                }, 0);
             },
             'blur': function() {
                 window.unBackable = false;
+                setTimeout(function () {
+                    window.viewNavigator.refreshScroller();
+                }, 0);
             },
             'input': function() {
                 self.onSearch(this.value);
@@ -46,30 +52,39 @@ window.SearchView = Backbone.View.extend({
         
         this.headerActions = $('<a href="#" class="header-button header-button-icon header-button-right search" style="display: none"><button><img src="assets/img/search-icon.png" width="14" height="14"></button></a>');
         
+        var validTags = new SearchTagList();
+        validTags.findByParent(0);
+        new SearchTagListView({el: $('#allTags', this.el), model: validTags, callback: this.editTag}).render();
+        
+        var prefectTags = new SearchTagList();
+        prefectTags.getPrefectNormal();
+        new SearchTagListView({el: $('#prefectTags', this.el), model: prefectTags, callback: this.editTag}).render();
+        
         return this;
+    },
+            
+    editTag: function(tagId) {
+        console.log("Do Nothing " + tagId);
     },
         
     initSearchView: function() {
         
         var self = this;
         setTimeout(function() {
-            var gallery, el, i, page,
+            var gallery, i, page,
             dots = document.querySelectorAll('#nav li'),
-            slides = ['#searchResult', '#prefCateg', '#allCateg'];
+            slides = ['#searchResult', '#prefectTags', '#allTags'];
 
-            gallery = new SwipeView('#wrapper', {
-                numberOfPages: slides.length,
-                hastyPageFlip: true
+            self.gallery = gallery = new SwipeView('#wrapper', {
+                numberOfPages: slides.length
             });
 
             // Load initial data
             for (i = 0; i < 3; i++) {
                 page = i === 0 ? slides.length - 1 : i - 1;
-
-                el = $(slides[page]);
-                gallery.masterPages[i].appendChild(el);
+                gallery.masterPages[i].appendChild(document.querySelector(slides[page]));
             }
-
+                        
             gallery.onFlip(function() {
                 var el, upcoming, i;
 
@@ -77,12 +92,42 @@ window.SearchView = Backbone.View.extend({
                     upcoming = gallery.masterPages[i].dataset.upcomingPageIndex;
 
                     if (upcoming !== gallery.masterPages[i].dataset.pageIndex) {
-                        el = gallery.masterPages[i].querySelector('span');
+                        el = gallery.masterPages[i].querySelector('div');
                         el.innerHTML = slides[upcoming];
                     }
                 }
+                
+                $('#nav .selected').removeClass('selected');
+                dots[gallery.pageIndex].className = 'selected';
+                
+                if (!window.viewNavigator.winPhone) {
+                    if(window.viewNavigator.scroller !== null) {
+                        window.viewNavigator.scroller.destroy();
+                        window.viewNavigator.scroller = null;
+                    }
+                    
+                    if ('ontouchstart' in window) {
+                        window.viewNavigator.scroller = new iScroll($('.swipeview-active')[0], {
+                            hScroll: false,
+                            lockDirection: true
+                        });
+                    } else {
+                        $('.swipeview-active').css('overflow', 'auto');
+                    }
+                }
             });
-        }, 150);
+            
+            gallery.onMoveOut(function () {
+                gallery.masterPages[gallery.currentMasterPage].className = gallery.masterPages[gallery.currentMasterPage].className.replace(/(^|\s)swipeview-active(\s|$)/, '');
+            });
+
+            gallery.onMoveIn(function () {
+                var className = gallery.masterPages[gallery.currentMasterPage].className;
+                /(^|\s)swipeview-active(\s|$)/.test(className) || (gallery.masterPages[gallery.currentMasterPage].className = !className ? 'swipeview-active' : className + ' swipeview-active');
+            });
+            
+            gallery.goToPage(1);
+        }, 10);
     },
 
     onSearch: function(searchKey) {
@@ -94,11 +139,13 @@ window.SearchView = Backbone.View.extend({
                 this.displayHeaderActions = true;
                 this.displaySearch(true);
             }
+            this.gallery.goToPage(0);
         } else {
             if(this.displayHeaderActions) {
                 this.displayHeaderActions = false;
                 this.displaySearch(false);
             }
+            this.gallery.goToPage(1);
         }
     },
         

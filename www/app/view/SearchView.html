@@ -1,11 +1,21 @@
-<div id="searchView" style="width:100%; height:100%">
-    <div id="wrapper" style="width:100%; height:100%">
+<div id="searchView" class="striped">
+    <div id="wrapper">
     </div>
     <ul id="nav">
-	<li id="prev" onclick="gallery.prev()">-</li>
-	<li class="selected" onclick="gallery.goToPage(0)"></li>
-	<li onclick="gallery.goToPage(1)"></li>
-	<li onclick="gallery.goToPage(2)"></li>
-        <li id="next" onclick="gallery.next()">+</li>
+	<li></li>
+	<li class="selected"></li>
+	<li></li>
     </ul>
+    <div id="searchResult" style="width:100%;">
+        <ul class="tableview tableview-links ui-listview">
+        </ul>
+    </div>
+    <div id="prefectTags" style="width:100%;">
+        <ul class="tableview tableview-links ui-listview">
+        </ul>
+    </div>
+    <div id="allTags" style="width:100%;">
+        <ul class="tableview tableview-links ui-listview">
+        </ul>
+    </div>
 </div>
