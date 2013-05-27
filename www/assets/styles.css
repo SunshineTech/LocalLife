@@ -39,7 +39,6 @@ button {
 
 .header-button {
     position: absolute;
-    top: 0;
     padding: 7px 5px;
     -webkit-tap-highlight-color: rgba(0,0,0,0);
     line-height: 1em;
@@ -82,7 +81,7 @@ button {
     vertical-align: text-bottom;
 }
 
-.header-button.tappable-active button{
+.header-button.tappable-active button {
     -webkit-border-image: url(img/button-active.png) 4 10 4 10;
     -moz-border-image: url(img/button-active.png) 4 10 4 10;
     -ms-border-image: url(img/button-active.png) 4 10 4 10;
@@ -360,7 +359,8 @@ button {
 }
 
 .tableview-links li>a.detail-disclosure,
-.tableview-links li>a.list-disclosure {
+.tableview-links li>a.list-disclosure,
+.tableview-links li>a.delete-disclosure {
     /*-webkit-touch-callout: none;*/
     padding: 0;
     width: 44px;
@@ -380,13 +380,19 @@ button {
     margin-right: 44px;
 }
 
+.tableview-links li>a.delete-disclosure {
+    margin-right: 44px;
+}
+
 .tableview-links li>a.detail-disclosure.tappable-active,
-.tableview-links li>a.list-disclosure.tappable-active{
+.tableview-links li>a.list-disclosure.tappable-active,
+.tableview-links li>a.delete-disclosure.tappable-active {
     background: transparent none;
 }
 
 .tableview-links li>a.detail-disclosure span,
-.tableview-links li>a.list-disclosure span {
+.tableview-links li>a.list-disclosure span,
+.tableview-links li>a.delete-disclosure span {
     display: inline-block;
     width: 29px;
     height: 31px;
@@ -402,12 +408,17 @@ button {
     background-image: url(img/list-open-button.png);
 }
 
+.tableview-links li>a.delete-disclosure span {
+    background-image: url(img/delete-button.png);
+}
+
 .tableview-links li>a.sublist-open span {
     background-image: url(img/list-close-button.png);
 }
 
 .tableview-links li>a.detail-disclosure.tappable-active span,
-.tableview-links li>a.list-disclosure.tappable-active span {
+.tableview-links li>a.list-disclosure.tappable-active span,
+.tableview-links li>a.delete-disclosure.tappable-active span {
     background-position: top right;
 }
 
@@ -423,7 +434,7 @@ button {
 #wrapper {
     position:absolute;
     width: 100%;
-    top: 10px;
+    top: 40px;
     bottom: 0px;
 }
 
@@ -484,4 +495,20 @@ button {
     -ms-box-align:center;
     -o-box-align:center;
     box-align:center;
+}
+
+.rotate90 {
+    -webkit-transform: rotate(90deg);
+    -moz-transform: rotate(90deg);
+    -o-transform: rotate(90deg);
+    -ms-transform: rotate(90deg);
+    transform: rotate(90deg);
+}
+
+.rotateN90 {
+    -webkit-transform: rotate(-90deg);
+    -moz-transform: rotate(-90deg);
+    -o-transform: rotate(-90deg);
+    -ms-transform: rotate(-90deg);
+    transform: rotate(-90deg);
 }
