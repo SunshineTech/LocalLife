@@ -1,21 +1,11 @@
 window.SearchTag = Backbone.Model.extend({
-    
-    initialize: function() {
-        this.subTags = new SearchTagList();
-        this.subTags.parentId = this.id;
-        this.subTags.disableInclude = this.disableInclude;
-    },
-    
+ 
     sync: function(method, model, options) {
         var dao = new SearchTagDAO();
         switch (method) {
             case "read":
                 if(model.id) {
                     dao.findById(model.id, function(data) {
-                        options.success(data);
-                    });
-                } else if(model.parentId) {
-                    dao.findByParent(model.parentId, model.disableInclude, function(data) {
                         options.success(data);
                     });
                 }

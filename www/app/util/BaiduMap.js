@@ -167,6 +167,7 @@ var BaiduMap = window.BaiduMap = BaiduMap || {};
         } else {
             this.centerMarker = new BMap.Marker(newPt, {icon: this.options.locationIcon, enableMassClear: false});
             this.centerMarker.addEventListener("click", function() {
+                window.overlayClicked = true;
                 window.infoWin.open(this);
                 var address = "我的位置<br>精确到" + parseInt(position.coords.accuracy) + "米";
                 //var address = '<ul style="margin: 0; color: #FFFFFF;"><li style="font-size: 1em;">我的位置</li><li style="font-size: 0.8em;">精确到' + parseInt(position.coords.accuracy) + '米</li></ul>';
@@ -179,6 +180,10 @@ var BaiduMap = window.BaiduMap = BaiduMap || {};
             this.centerCircle.setCenter(newPt);
         } else {
             this.centerCircle = new BMap.Circle(newPt, position.coords.accuracy, {fillColor: "#e3e3ef", strokeWeight: 1, fillOpacity: 0, enableMassClear: false});
+            this.centerCircle.addEventListener("click", function() {
+                window.overlayClicked = true;
+                console.log('centerCircle');
+            });
             this._map.addOverlay(this.centerCircle);
         }     
     };

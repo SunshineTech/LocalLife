@@ -15,6 +15,7 @@ window.MapView = Backbone.View.extend({
     },
         
     render: function (eventName) {
+
         $(this.el).html(this.template());
         this.setElement(this.$("#mapView"));
         
@@ -25,17 +26,22 @@ window.MapView = Backbone.View.extend({
         }
         this.titleActions = $('<div id="goSearch" class="ui-input-search ui-shadow-inset ui-btn-corner-all ui-btn-shadow ui-icon-search ui-body-c" style="' + style + '">地点、顺风车、出租车、餐饮、住宿、购物</div>');
         var self = this;
-        this.titleActions.on( "click", function(event){
-            self.goSearch(event);
-        } );
+        this.titleActions.on( "click", function(){
+            var serchView = new SearchView({map: self.map, bounds: self.map.getBounds()});
+            window.viewNavigator.pushView( serchView );
+        } );        
         
         return this;
     },
-        
+    
     initMap: function() {
-
+        if(typeof(BMap) === 'undefined') {
+            NativeUtil.showAlert("不能获取到地图，请确认网络状况并稍后重试！", "获取地图错误");
+            return false;
+        }
+        var self = this;
         setTimeout( function() {
-            var map = new BMap.Map('map', {enableHighResolution: false});
+            var map = self.map = new BMap.Map('map', {enableHighResolution: false});
 
             window.infoWin = new BaiduMap.InfoWindow(map);            
 
@@ -50,27 +56,34 @@ window.MapView = Backbone.View.extend({
             }
             map.centerAndZoom(point, mapLevel);
 
+            map.enableScrollWheelZoom();
             map.enableKeyboard();
             map.enableInertialDragging();
             map.enableContinuousZoom();
+            
+            map.addEventListener("click", self.onMapClick);
 
             map.addControl(new BaiduMap.GeolocationControl({enableAutoLocation: true, locationIcon: new BMap.Icon("assets/img/center.png", new BMap.Size(18, 18)) }));
             map.addControl(new BMap.MapTypeControl({ anchor: BMAP_ANCHOR_TOP_RIGHT, offset: new BMap.Size(2, 2) }));
             map.addControl(new BaiduMap.ScaleControl());
             map.addControl(new BaiduMap.NavigationControl());
-        }, 150);
+        }, 10);
     },
-
-    goSearch: function() {
-        var serchView = new SearchView();
-        window.viewNavigator.pushView( serchView );
-    },
-            
+          
     openExternalLink: function (event) {
                        
     	event.stopImmediatePropagation();
         event.preventDefault();
 
 	return false;
+    },
+    
+    onMapClick: function(e) {
+        if(window.overlayClicked) {
+            console.log("overlayClicked");
+            window.overlayClicked = false;
+        } else {
+            console.log("Not overlayClicked");
+        }
     }
 });

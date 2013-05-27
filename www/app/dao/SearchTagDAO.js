@@ -62,12 +62,12 @@ _.extend(SearchTagDAO.prototype, {
             var self = this;
             this.db.transaction(
                 function(tx) {
-                    var sql = "SELECT id, name, userImg, img " +
+                    var sql = "SELECT id, name, userImg, img, 0 subCount " +
                             "FROM searchTag " +
                             "WHERE name LIKE ? " +
                             "ORDER BY priority";
 
-                    tx.executeSql(sql, ['%' + key + '%'], function(tx, results) { self._getResults(tx, results, callback); });
+                    tx.executeSql(sql, [key + '%'], function(tx, results) { self._getResults(tx, results, callback); });
                 },
                 function(tx) { NativeUtil.showAlert(tx.message, "查询标签时出错"); }
             );
