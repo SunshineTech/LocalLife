@@ -28,7 +28,7 @@ window.SearchView = Backbone.View.extend({
         }
 
         var self = this;
-        var searchKeyComp = this.searchKeyComp = $('<input data-type="search" class="ui-input-text ui-body-null" placeholder="地点、顺风车、出租车、餐饮、住宿、购物" autocomplete="off"/>');
+        var searchKeyComp = this.searchKeyComp = $('<input data-type="search" class="ui-input-text ui-body-null" placeholder="地点、顺风车、出租车、餐饮、住宿、购物" autofocus="autofocus" autocomplete="off"/>');
         searchKeyComp.on({
             'focus click': function() {
                 window.unBackable = true;
@@ -65,7 +65,7 @@ window.SearchView = Backbone.View.extend({
         this.searchHisList = new SearchHisList();
         this.searchHisList.findByName('');
         this.searchHisList.on("reset remove", function() {
-            self.displayCleanBtn();
+            setTimeout(function() { self.displayCleanBtn(); }, 20);
         }, this);
         new SearchHisListView({el: $('.searchHis', this.el), model: this.searchHisList, callback: this.searchHisSelected}).render();
         
