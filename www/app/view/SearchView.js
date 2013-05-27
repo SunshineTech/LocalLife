@@ -28,7 +28,7 @@ window.SearchView = Backbone.View.extend({
         }
 
         var self = this;
-        var searchKeyComp = this.searchKeyComp = $('<input data-type="search" class="ui-input-text ui-body-null" placeholder="地点、顺风车、出租车、餐饮、住宿、购物" autofocus autocomplete="off"/>');
+        var searchKeyComp = this.searchKeyComp = $('<input data-type="search" class="ui-input-text ui-body-null" placeholder="地点、顺风车、出租车、餐饮、住宿、购物" autocomplete="off"/>');
         searchKeyComp.on({
             'focus click': function() {
                 window.unBackable = true;
