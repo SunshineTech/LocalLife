@@ -319,44 +319,46 @@ ViewNavigator.prototype.destroyScroller = function() {
 
 ViewNavigator.prototype.resetScroller = function() {
 
-    var id = this.contentViewHolder.attr('id');
     var currentViewDescriptor = this.history[ this.history.length - 1];
-    this.destroyScroller();
+    if(!(currentViewDescriptor && currentViewDescriptor.customScroll === true)) {
+        this.destroyScroller();
 
-    if (!this.winPhone) {
-        if (id && !(currentViewDescriptor && currentViewDescriptor.scroll === false)) {
-            var self = this;
-            if ('ontouchstart' in window) {
-                setTimeout(function() {
+        if (!this.winPhone) {
+            var id = this.contentViewHolder.attr('id');
+            if (id && !(currentViewDescriptor && currentViewDescriptor.scroll === false)) {
+                var self = this;
+                if ('ontouchstart' in window) {
+                    setTimeout(function() {
 
-                    //use this to mantain scroll position when scroller is destroyed
-                    var targetDiv = $($('#' + id).children()[0]);
-                    var scrollY = targetDiv.attr('scrollY');
-                    var originalTopMargin = targetDiv.attr('originalTopMargin');
-                    if (currentViewDescriptor.maintainScrollPosition !== false && scrollY !== undefined && scrollY !== '') {
-                        //  console.log( 'resetScroller scrollY: ' + scrollY)
-                        //  targetDiv.css( 'margin-top', originalTopMargin );
-                        var cssString = 'translate3d(0px, ' + (originalTopMargin).toString() + 'px, 0px)';
-                        targetDiv.css('-webkit-transform', cssString);
-                    }
-                    self.scroller = new iScroll(id, {
-                        useTransition: true,
-                        onBeforeScrollStart: function(e) {
-                            var target = e.target;
-                            while (target.nodeType !== 1)
-                                target = target.parentNode;
-                            if (target.tagName !== 'SELECT' && target.tagName !== 'INPUT' && target.tagName !== 'TEXTAREA') {
-                                e.preventDefault();
-                            }
+                        //use this to mantain scroll position when scroller is destroyed
+                        var targetDiv = $($('#' + id).children()[0]);
+                        var scrollY = targetDiv.attr('scrollY');
+                        var originalTopMargin = targetDiv.attr('originalTopMargin');
+                        if (currentViewDescriptor.maintainScrollPosition !== false && scrollY !== undefined && scrollY !== '') {
+                            //  console.log( 'resetScroller scrollY: ' + scrollY)
+                            //  targetDiv.css( 'margin-top', originalTopMargin );
+                            var cssString = 'translate3d(0px, ' + (originalTopMargin).toString() + 'px, 0px)';
+                            targetDiv.css('-webkit-transform', cssString);
                         }
-                    });
-                    if (currentViewDescriptor.maintainScrollPosition !== false && scrollY !== undefined && scrollY !== "") {
-                        self.scroller.scrollTo(0, parseInt(scrollY, 10));
-                    }
-                }, 10);
-            } else {
-                var target = $('#' + id);
-                target.css('overflow', 'auto');
+                        self.scroller = new iScroll(id, {
+                            useTransition: true,
+                            onBeforeScrollStart: function(e) {
+                                var target = e.target;
+                                while (target.nodeType !== 1)
+                                    target = target.parentNode;
+                                if (target.tagName !== 'SELECT' && target.tagName !== 'INPUT' && target.tagName !== 'TEXTAREA') {
+                                    e.preventDefault();
+                                }
+                            }
+                        });
+                        if (currentViewDescriptor.maintainScrollPosition !== false && scrollY !== undefined && scrollY !== "") {
+                            self.scroller.scrollTo(0, parseInt(scrollY, 10));
+                        }
+                    }, 10);
+                } else {
+                    var target = $('#' + id);
+                    target.css('overflow', 'auto');
+                }
             }
         }
     }
