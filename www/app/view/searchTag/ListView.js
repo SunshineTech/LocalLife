@@ -17,8 +17,6 @@ window.SearchTagListView = Backbone.View.extend({
             ul.append(new SearchTagItemView({model: searchTag}).render().el);
         }, this);
         
-        window.viewNavigator.refreshScroller();
-        
         return this;
     },
         
@@ -36,7 +34,7 @@ window.SearchTagListView = Backbone.View.extend({
         if(className.indexOf('list-disclosure') === 0) {
 
             if(this.target && this.target !== target) {
-                this.sublist.css('display', 'none');
+                this.sublist.hide();
                 this.target.removeClass('sublist-open');
             }
         
@@ -55,14 +53,14 @@ window.SearchTagListView = Backbone.View.extend({
             
             if(className === 'list-disclosure') {
                 target.addClass('sublist-open');
-                sublistEL.css('display', '');
+                sublistEL.show();
                 this.target = target;
                 this.sublist = sublistEL;
                 if (window.viewNavigator.scroller !== null) {
                     window.viewNavigator.scroller.scrollToElement(targetLi.get(0), 100);
                 }                
             } else {
-                sublistEL.css('display', 'none');
+                sublistEL.hide();
                 target.removeClass('sublist-open');
             }
             window.viewNavigator.refreshScroller();

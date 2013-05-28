@@ -2,8 +2,6 @@ templates.SearchView = "app/view/SearchView.html";
 
 window.SearchView = Backbone.View.extend({
     
-    customScroll: true,
-    
     initialize: function(options) {
         this.map = options.map;
         this.bounds = options.bounds;
@@ -32,15 +30,9 @@ window.SearchView = Backbone.View.extend({
         searchKeyComp.on({
             'focus click': function() {
                 window.unBackable = true;
-                setTimeout(function () {
-                    window.viewNavigator.refreshScroller();
-                }, 20);
             },
             'blur': function() {
                 window.unBackable = false;
-                setTimeout(function () {
-                    window.viewNavigator.refreshScroller();
-                }, 0);
             },
             'input': function() {
                 self.onSearch(this.value);
@@ -53,9 +45,9 @@ window.SearchView = Backbone.View.extend({
             self.onSearch();
         });
         
-        this.titleActions = $('<div id="textSearch" class="ui-input-search ui-shadow-inset ui-btn-corner-all ui-btn-shadow ui-icon-search ui-body-c" style="' + style + '"></div>');
-        this.titleActions.append(searchKeyComp);
-        this.titleActions.append(clearText);
+        this.title = $('<div id="textSearch" class="ui-input-search ui-shadow-inset ui-btn-corner-all ui-btn-shadow ui-icon-search ui-body-c" style="' + style + '"></div>');
+        this.title.append(searchKeyComp);
+        this.title.append(clearText);
         
         this.headerActions = $('<a href="#" class="header-button header-button-icon header-button-right search" style="display: none"><button><img src="assets/img/search-icon.png" width="14" height="14"></button></a>');
         this.headerActions.on('click', function() {
@@ -65,7 +57,10 @@ window.SearchView = Backbone.View.extend({
         this.searchHisList = new SearchHisList();
         this.searchHisList.findByName('');
         this.searchHisList.on("reset remove", function() {
-            setTimeout(function() { self.displayCleanBtn(); }, 20);
+            setTimeout(function() {
+                window.viewNavigator.refreshScroller();
+                self.displayCleanBtn(); 
+            }, 20);
         }, this);
         new SearchHisListView({el: $('.searchHis', this.el), model: this.searchHisList, callback: this.searchHisSelected}).render();
         
@@ -73,9 +68,19 @@ window.SearchView = Backbone.View.extend({
         //为了保证回调函数的上下文是本对象，需要如下处理：
         var searchTagSelectedCallback = function(searchTag) { self.searchTagSelected(searchTag); };
         this.searchTagList = new SearchTagList();
+        this.searchTagList.on("reset", function() {
+            setTimeout(function() {
+                window.viewNavigator.refreshScroller();
+            }, 20);
+        }, this);
         new SearchTagListView({el: $('.searchTag', this.el), model: this.searchTagList, callback: searchTagSelectedCallback}).render();
         
         this.searchResultList = new Backbone.Collection();
+        this.searchResultList.on("reset", function() {
+            setTimeout(function() {
+                window.viewNavigator.refreshScroller();
+            }, 20);
+        }, this);
         new SearchResultListView({el: $('.searchResult', this.el), model: this.searchResultList, callback: this.searchResultSelected}).render();
         
         var validTags = new SearchTagList();
@@ -107,6 +112,7 @@ window.SearchView = Backbone.View.extend({
                 gallery.masterPages[i].appendChild(document.querySelector(slides[page]));
             }            
 
+            self.scroll = 'swipeview-masterpage-2';
             gallery.goToPage(1);
 
             gallery.onFlip(function() {
@@ -123,22 +129,9 @@ window.SearchView = Backbone.View.extend({
 
                 $('#nav .selected').removeClass('selected');
                 dots[gallery.pageIndex].className = 'selected';
-
-                if (!window.viewNavigator.winPhone) {
-                    if(window.viewNavigator.scroller !== null) {
-                        window.viewNavigator.scroller.destroy();
-                        window.viewNavigator.scroller = null;
-                    }
-
-                    if ('ontouchstart' in window) {
-                        window.viewNavigator.scroller = new iScroll($('.swipeview-active')[0], {
-                            hScroll: false,
-                            lockDirection: true
-                        });
-                    } else {
-                        $('.swipeview-active').css('overflow', 'auto');
-                    }
-                }
+                
+                self.scroll = 'swipeview-masterpage-' + ((gallery.pageIndex + 1) % 3);             
+                window.viewNavigator.resetScroller();
             });
 
             gallery.onMoveOut(function () {
@@ -149,15 +142,15 @@ window.SearchView = Backbone.View.extend({
                  var className = gallery.masterPages[gallery.currentMasterPage].className;
                  /(^|\s)swipeview-active(\s|$)/.test(className) || (gallery.masterPages[gallery.currentMasterPage].className = !className ? 'swipeview-active' : className + ' swipeview-active');
             });
-        }, 10);
+        }, 0);
     },
     
     displayCleanBtn: function() {
         if(this.gallery.pageIndex === 0 && !($.trim(this.searchKeyComp.val()) || this.searchHisList.size() === 0)) {
-            $('#cleanSearchHis', this.el).css('display', '');
+            $('#cleanSearchHis', this.el).show();
             $('#wrapper', this.el).css('top', '40px');
         } else {
-            $('#cleanSearchHis', this.el).css('display', 'none');
+            $('#cleanSearchHis', this.el).hide();
             $('#wrapper', this.el).css('top', '10px');
         }
     },
@@ -188,12 +181,12 @@ window.SearchView = Backbone.View.extend({
         
     displaySearch: function(display) {
         if(display) {
-            this.titleActions.css('margin-right', '42px');
-            this.headerActions.css('display', '');
+            this.title.css('margin-right', '42px');
+            this.headerActions.show();
             this.clearText.removeClass('ui-input-clear-hidden');
         } else {
-            this.titleActions.css('margin-right', '5px');
-            this.headerActions.css('display', 'none');
+            this.title.css('margin-right', '5px');
+            this.headerActions.hide();
             this.clearText.addClass('ui-input-clear-hidden');
         }
     },

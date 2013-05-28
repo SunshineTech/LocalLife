@@ -24,9 +24,9 @@ window.MapView = Backbone.View.extend({
             this.backLabel = '返回';
             style = "margin-left: 65px;";
         }
-        this.titleActions = $('<div id="goSearch" class="ui-input-search ui-shadow-inset ui-btn-corner-all ui-btn-shadow ui-icon-search ui-body-c" style="' + style + '">地点、顺风车、出租车、餐饮、住宿、购物</div>');
+        this.title = $('<div id="goSearch" class="ui-input-search ui-shadow-inset ui-btn-corner-all ui-btn-shadow ui-icon-search ui-body-c" style="' + style + '">地点、顺风车、出租车、餐饮、住宿、购物</div>');
         var self = this;
-        this.titleActions.on( "click", function(){
+        this.title.on( "click", function(){
             var serchView = new SearchView({map: self.map, bounds: self.map.getBounds()});
             window.viewNavigator.pushView( serchView );
         } );        
@@ -67,7 +67,7 @@ window.MapView = Backbone.View.extend({
             map.addControl(new BMap.MapTypeControl({ anchor: BMAP_ANCHOR_TOP_RIGHT, offset: new BMap.Size(2, 2) }));
             map.addControl(new BaiduMap.ScaleControl());
             map.addControl(new BaiduMap.NavigationControl());
-        }, 10);
+        }, 0);
     },
           
     openExternalLink: function (event) {

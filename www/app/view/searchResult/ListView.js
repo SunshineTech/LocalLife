@@ -18,8 +18,6 @@ window.SearchResultListView = Backbone.View.extend({
             ul.append(new SearchResultItemView({model: poi}).render().el);
         }, this);
 
-        window.viewNavigator.refreshScroller();
-
         return this;
     },
     

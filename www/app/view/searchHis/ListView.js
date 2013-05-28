@@ -17,9 +17,7 @@ window.SearchHisListView = Backbone.View.extend({
         _.each(this.model.models, function(searchHis) {
             ul.append(new SearchHisItemView({model: searchHis}).render().el);
         }, this);
-
-        window.viewNavigator.refreshScroller();
-
+        
         return this;
     },
     
