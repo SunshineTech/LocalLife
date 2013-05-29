@@ -23,9 +23,8 @@ var BaiduMap = window.BaiduMap = BaiduMap || {};
                     var item = json[i];
                     if(item && item.error === 0){
                         var newPt = new BMap.Point(item.x, item.y);
-                        Position = cordova.require('cordova/plugin/Position');
-                        var pos = new Position(
-                            {
+                        var pos = {
+                            coords: {
                                 latitude: newPt.lat,
                                 longitude: newPt.lng,
                                 altitude: p.coords.altitude,
@@ -34,8 +33,8 @@ var BaiduMap = window.BaiduMap = BaiduMap || {};
                                 velocity: p.coords.velocity,
                                 altitudeAccuracy: p.coords.altitudeAccuracy
                             },
-                            (p.timestamp === undefined ? new Date() : ((p.timestamp instanceof Date) ? p.timestamp : new Date(p.timestamp)))
-                        );
+                            timestamp: (p.timestamp === undefined ? new Date() : ((p.timestamp instanceof Date) ? p.timestamp : new Date(p.timestamp)))
+                        };
                         console.info("The cord translated: (" + pos.coords.longitude + ", " + pos.coords.latitude + ", " + pos.coords.accuracy + ").");
                         callback && callback(pos);
                     }
