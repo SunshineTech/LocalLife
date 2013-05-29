@@ -56,4 +56,13 @@
     <script src="app/view/SearchView.js"></script>
     <script src="app/view/SearchResultView.js"></script>    
     <script src="app/main.js"></script>
+    <script>
+        $(document).ready(function() {
+            if (!window.localStorage.getItem("location_way")) {
+                window.localStorage.setItem("location_way", "Explorer");
+            }
+            
+            loadTemplates(appTemplatesLoaded);
+        });
+    </script>
 </html>
